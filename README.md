@@ -10,5 +10,5 @@ This is a generic setup and can be used to classify almost any type of image. I 
 
 
 ## Results:
-![](results.png)
+![](results3set.png)
 
