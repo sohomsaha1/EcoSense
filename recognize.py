@@ -1,46 +1,79 @@
-import tensorflow as tf
-import sys
-import os
-import tkinter as tk
-from tkinter import filedialog
+import numpy
+from keras.models import Sequential
+from keras.layers import Dense, Dropout, Flatten, BatchNormalization, Activation
+from keras.constraints import maxnorm
+from keras.layers.convolutional import Conv2D, MaxPooling2D
+from keras.utils import np_utils
+from keras.datasets import cifar10
 
-# Disable tensorflow compilation warnings
-os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
-import tensorflow as tf
+# set a random seed**
+seed = 21
+numpy.random.seed(seed)
 
-# image_path = sys.argv[1]
+# load data from database
+(X_train, y_train), (X_test, y_test) = cifar10.load_data()
 
-root = tk.Tk()
-root.withdraw()
+# normalize inputs from 0-255 to 0.0-1.0 pixels
+X_train = X_train.astype('float32')
+X_test = X_test.astype('float32')
+X_train = X_train / 255.0
+X_test = X_test / 255.0
 
-image_path = filedialog.askopenfilename()
+y_train = np_utils.to_categorical(y_train)
+y_test = np_utils.to_categorical(y_test)
+num_classes = y_test.shape[1]
 
-if image_path:
-    
-    # This helps us read image data (database of trash pictures)
-    image_data = tf.gfile.FastGFile(image_path, 'rb').read()
+# Create the model
+model = Sequential()
 
-    file, strips off carriage return
-    label_lines = [line.rstrip() for line 
-                       in tf.gfile.GFile("tf_files/retrained_labels.txt")]
+model.add(Conv2D(32, (3, 3), input_shape=X_train.shape[1:], padding='same'))
+model.add(Activation('relu'))
+model.add(Dropout(0.2))
+model.add(BatchNormalization())
 
-    #  graph from file
-    with tf.gfile.FastGFile("tf_files/retrained_graph.pb", 'rb') as f:
-        graph_def = tf.GraphDef()
-        graph_def.ParseFromString(f.read())
-        _ = tf.import_graph_def(graph_def, name='')
+model.add(Conv2D(64, (3, 3), padding='same'))
+model.add(Activation('relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.2))
+model.add(BatchNormalization())
 
-    with tf.Session() as sess:
-        # Feed the image_data as input to the graph and get first prediction
-        softmax_tensor = sess.graph.get_tensor_by_name('final_result:0')
-        
-        predictions = sess.run(softmax_tensor, \
-                 {'DecodeJpeg/contents:0': image_data})
-        
-        # Sorts the predictions based on cofidence of recogniition
-        top_k = predictions[0].argsort()[-len(predictions[0]):][::-1]
-        
-        for node_id in top_k:
-            human_string = label_lines[node_id]
-            score = predictions[0][node_id]
-            print('%s (score = %.5f)' % (human_string, score))
+model.add(Conv2D(64, (3, 3), padding='same'))
+model.add(Activation('relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.2))
+model.add(BatchNormalization())
+
+model.add(Conv2D(128, (3, 3), padding='same'))
+model.add(Activation('relu'))
+model.add(Dropout(0.2))
+model.add(BatchNormalization())
+
+model.add(Flatten())
+model.add(Dropout(0.2))
+
+model.add(Dense(256, kernel_constraint=maxnorm(3)))
+model.add(Activation('relu'))
+model.add(Dropout(0.2))
+model.add(BatchNormalization())
+model.add(Dense(128, kernel_constraint=maxnorm(3)))
+model.add(Activation('relu'))
+model.add(Dropout(0.2))
+model.add(BatchNormalization())
+model.add(Dense(num_classes))
+model.add(Activation('softmax'))
+
+epochs = 25
+optimizer = 'Sohom'
+
+model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
+
+print(model.summary())
+
+model.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=epochs, batch_size=64)
+
+# Final evaluation of the model/ 1 compost/ 2 recycling 3 trash 
+
+scores = model.evaluate(X_test, y_test, verbose=0)
+print("Accuracy: %.2f%%" % (scores[1]*100))
+print("Accuracy: %.2f%%" % (scores[2]*100))
+print("Accuracy: %.2f%%" % (scores[3]*100))
