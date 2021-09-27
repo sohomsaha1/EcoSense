@@ -1,9 +1,14 @@
 # Motivation
 Every single year, billions of pounds worth of trash is dumped without any possible way to recycle.
+
 Out of these billions, in Canada up to 25% of all recyclables are contaminated, hence turn to trash. (CBC, 2019)
+
 Some quick math tells us that this equates to millions of pounds worth of trash being contaminated in Canada.
+
 A little bit of research shows us that the leading cause of contamination is because of municipal and household garbage cans.
+
 What if we had a way to recognize contaminated garbage, and spark a movement of cleaner household and municipal waste removal?
+
 Meet Trash-R. Pitched at SHAD 2019 it got lots of praise by McGill University Judges for its unique concept and approach.
 
 ## Tensorflow
