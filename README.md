@@ -9,7 +9,7 @@ A little bit of research shows us that the leading cause of contamination is bec
 
 What if we had a way to recognize contaminated garbage, and spark a movement of cleaner household and municipal waste removal?
 
-Meet Trash-R. Pitched at SHAD 2019 it got lots of praise by McGill University Judges for its unique concept and approach.
+Meet EcoSense. Pitched at SHAD 2019 it got lots of praise by McGill University Judges for its unique concept and approach.
 
 ## Tensorflow
 This is a generic setup and can be used to classify almost any type of image. I created a small demo that classifies three image data sets: garbage, recycling, and compost.
@@ -19,7 +19,7 @@ We use the help of Gradient Boosting to identify potentially contaminated recycl
 The dataset used to train the model consists of 2,567 images from the Google Images database, a long with certain datasets from the McGill Environmental department.
 
 ## SHAD 2019 Pitch Competition
-Here were some early prototype examples of what we envisioned Trash-R to be
+Here were some early prototype examples of what we envision EcoSense to be
 
 ![](ShadPitch.png)
 
